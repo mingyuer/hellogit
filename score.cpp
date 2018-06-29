@@ -1,60 +1,71 @@
 #include<iostream>
-#include<sstream>
-#include<string>
-#include<cstdio>
 #include<vector>
+#include<cstring>
+#include<string>
 #include<algorithm>
-#include<iomanip>
+#include<fstream>
+#include<sstream>
+#include<cstdio>
+
 using namespace std;
-struct student
-{
-	string name,gender,sct;
-	double score;
-	bool sex;
-	student(){};
-	student(string _s,string _g,string _sct,double _sc):name(_s),gender(_g),sct(_sct),score(_sc){};
-	void calcsex() {sex=(gender=="Female");}
-	bool operator <(const student &a) const
-	{
-		return (score>a.score)||((score==a.score) && (name<a.name));
-	}
+
+struct Student{
+string name;
+string sex;
+double score;
+Student(){};
+Student(string sname,string ssex,double sscore):name(sname),sex(ssex),score(sscore){};
 };
-vector<student> all,male,female;
-double average(const vector<student>& stu)
-{
-	double ans=0;
-	for (auto x:stu)
-	{
-		ans+=x.score;
-	}
-	return ans/double(stu.size());
+
+bool comp(const Student& a,const Student &b){
+return (a.score>b.score)||(a.score==b.score)&&(a.name<b.name);
 }
-int main()
-{
-	freopen("score.csv","r",stdin);
-	string line;
-	getline(cin,line);
-	string name,gender,score;
-    while (getline(cin,line))
-    {
-    	stringstream ss(line);
-    	getline(ss,name,',');
-		getline(ss,gender,',');
-		getline(ss,score,',');
-		gender.erase(0,1);score.erase(0,1);
-		double sc=stod(score);
-		student tmp(name,gender,score,sc);
-		tmp.calcsex();
-		if (tmp.sex) female.push_back(tmp);else male.push_back(tmp);
-		all.push_back(tmp);
-	}
-	cout<<fixed<<setprecision(1)<<average(all)<<endl<<average(male)<<endl<<average(female)<<endl;
-	sort(all.begin(),all.end());
-	for (auto x:all)
-	{
-		cout<<x.name<<" "<<x.gender<<" "<<x.sct<<endl;
-	}
-	return 0;
+vector<Student> stu;
+void  aver(){
+int cnt_m=0;
+int cnt_f=0;
+double total_m=0;
+double total_f=0;
+vector<Student>::iterator it=stu.begin();
+while(it!=stu.end()){
+if(it->sex=="Male"){
+cnt_m++;
+total_m+=it->score;
+}
+else if(it->sex=="Female"){
+cnt_f++;
+total_f+=it->score;
+}
+++it;
+}
+cout<<"male average:"<<total_m/cnt_m<<endl;
+cout<<"female average:"<<total_f/cnt_f<<endl;
+}
+
+int main(){
+freopen("score.csv","r",stdin);
+string data;
+getline(cin,data);
+string name,sex,score;
+while(getline(cin,data)){
+stringstream ss(data);
+getline(ss,name,',');
+getline(ss,sex,',');
+getline(ss,score,',');
+sex.erase(0,1);
+score.erase(0,1);
+double sc=atof(score.c_str());
+Student t(name,sex,sc);
+stu.push_back(t);
+}
+aver();
+sort(stu.begin(),stu.end(),comp);
+vector<Student>::iterator it=stu.begin();
+while(it!=stu.end()){
+cout<<it->name<<"\t"<<it->sex<<"\t"<<it->score<<endl;
+++it;
+}
+return 0;
 }
 
 
